@@ -1,0 +1,116 @@
+{
+  "categories": [
+    {
+      "id":"0",
+      "name": "Personatges",
+      "items": [
+        { 
+          "name": "Johnny Joestar", 
+          "description": "Protagonista de la Steel Ball Run. Su Stand, Tusk, tiene múltiples etapas que incluyen habilidades de manipulación de tiempo y espacio.",
+          "image": "images/Johnny_Joestar.png"
+        },
+        { 
+          "name": "Gyro Zeppeli", 
+          "description": "Maestro de la técnica Spin, usa Ball Breaker en combate. Participa en la carrera para liberar a un niño injustamente condenado.",
+          "image": "images/Gyro_Zeppeli.png"
+        },
+        { 
+          "name": "Diego Brando (THE WORLD)", 
+          "description": "Una versión alternativa de Diego que adquiere The World, un Stand que detiene el tiempo brevemente.",
+          "image": "images/Diego_Brando.png"
+        },
+        { 
+          "name": "Hot Pants", 
+          "description": "Participante de la Steel Ball Run con el Stand Cream Starter, que le permite manipular una sustancia de carne para curar o atacar.",
+          "image": "images/Hot_Pants.png"
+        },
+        { 
+          "name": "Lucy Steel", 
+          "description": "Esposa de Steven Steel. Adquiere el Stand Ticket to Ride, que otorga habilidades defensivas y de manipulación de la suerte.",
+          "image": "images/Lucy_Steel.png"
+        },
+        { 
+          "name": "Mountain Tim", 
+          "description": "Un cowboy con el Stand Oh! Lonesome Me, que le permite dividir su cuerpo en partes y moverlas por medio de una cuerda especial.",
+          "image": "images/Mountain_Tim.png"
+        },
+        { 
+          "name": "Ringo Roadagain", 
+          "description": "Un pistolero con el Stand Mandom, que le permite retroceder el tiempo seis segundos.",
+          "image": "images/Ringo_Roadagain.png"
+        },
+        { 
+          "name": "Pocoloco", 
+          "description": "Un competidor afortunado en la Steel Ball Run. Su Stand Hey Ya! le proporciona consejos y lo anima constantemente.",
+          "image": "images/Pocoloco.png"
+        },
+        { 
+          "name": "Sandman", 
+          "description": "Un nativo americano que corre en la Steel Ball Run para proteger su tierra. Su Stand In a Silent Way manipula el sonido para crear explosiones.",
+          "image": "images/Sandman.png"
+        },
+        { 
+          "name": "Funny Valentine", 
+          "description": "El antagonista principal de Steel Ball Run. Su Stand Dirty Deeds Done Dirt Cheap le permite viajar entre dimensiones paralelas.",
+          "image": "images/Funny_Valentine.png"
+        }
+      ]
+    },
+    {
+      "id":"1",
+      "name": "Stands",
+      "items": [
+        { 
+          "name": "Tusk", 
+          "description": "Stand de Johnny Joestar que evoluciona a lo largo de varias etapas con habilidades únicas.",
+          "image": "images/Tusk.png"
+        },
+        { 
+          "name": "Ball Breaker", 
+          "description": "Habilidad derivada de la técnica Spin de Gyro Zeppeli, que puede inducir el envejecimiento en los objetivos.",
+          "image": "images/Ball_Breaker.png"
+        },
+        { 
+          "name": "THE WORLD (Steel Ball Run)", 
+          "description": "Stand de la versión alternativa de Diego Brando, que detiene el tiempo brevemente.",
+          "image": "images/The_World.jpg"
+        },
+        { 
+          "name": "Cream Starter", 
+          "description": "Stand de Hot Pants, que produce una sustancia de carne usada para curar o atacar.",
+          "image": "images/Cream_Starter.png"
+        },
+        { 
+          "name": "Ticket to Ride", 
+          "description": "Stand de Lucy Steel que manipula la suerte y crea una defensa poderosa.",
+          "image": "images/Ticket_to_ride.png"
+        },
+        { 
+          "name": "Oh! Lonesome Me", 
+          "description": "Stand de Mountain Tim, que le permite dividir su cuerpo usando una cuerda especial.",
+          "image": "images/lonesome_me.png"
+        },
+        { 
+          "name": "Mandom", 
+          "description": "Stand de Ringo Roadagain que retrocede el tiempo seis segundos.",
+          "image": "images/Mandom.png"
+        },
+        { 
+          "name": "Hey Ya!", 
+          "description": "Stand de Pocoloco que lo anima y proporciona consejos, aumentando su confianza y suerte.",
+          "image": "images/Hey_ya.png"
+        },
+        { 
+          "name": "In a Silent Way", 
+          "description": "Stand de Sandman que manipula el sonido para crear explosiones y formas físicas.",
+          "image": "images/in_a_silent_way.png"
+        },
+        { 
+          "name": "Dirty Deeds Done Dirt Cheap", 
+          "description": "Stand de Funny Valentine que permite viajar entre dimensiones paralelas.",
+          "image": "images/D4C.png"
+        }
+      ]
+    }
+  ]
+}
