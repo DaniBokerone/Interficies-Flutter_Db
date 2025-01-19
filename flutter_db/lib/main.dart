@@ -169,59 +169,141 @@ class _ItemListViewState extends State<ItemListView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Items')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search for items...',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
+      appBar: AppBar(
+        title: Text(
+          'Items',
+          style: GoogleFonts.rye(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 214, 106, 67),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/sbr_background1.jpg"), 
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+          ),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white, 
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  style: GoogleFonts.rye(),
+                  decoration: InputDecoration(
+                    labelText: 'Search for items...',
+                    border: InputBorder.none, 
+                    prefixIcon: Icon(Icons.search),
+                    labelStyle: GoogleFonts.rye(), 
+                  ),
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: FutureBuilder<List<Item>>(
-              future: _itemsFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error loading items: ${snapshot.error}'));
-                } else if (snapshot.hasData) {
-                  final items = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final item = items[index];
-                      return ListTile(
-                        title: Text(item.name),
-                        subtitle: Text(item.description),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ItemDetailView(item: item),
+            Expanded(
+              child: FutureBuilder<List<Item>>(
+                future: _itemsFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error loading items: ${snapshot.error}', style: GoogleFonts.rye()));
+                  } else if (snapshot.hasData) {
+                    final items = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 165, 186, 240),
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 5,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.all(16),
+                            leading: FutureBuilder<Uint8List>(
+                              future: ApiData.fetchImage(item.image),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return CircularProgressIndicator();
+                                } else if (snapshot.hasError) {
+                                  return Icon(Icons.error);
+                                } else if (snapshot.hasData) {
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.memory(
+                                      snapshot.data!,
+                                      width: 50, 
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                } else {
+                                  return Icon(Icons.image_not_supported);
+                                }
+                              },
                             ),
-                          );
-                        },
-                      );
-                    },
-                  );
-                } else {
-                  return Center(child: Text('No items found'));
-                }
-              },
+                            title: Text(
+                              item.name,
+                              style: GoogleFonts.rye(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              item.description,
+                              style: GoogleFonts.rye(
+                              ), 
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ItemDetailView(item: item),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(child: Text('No items found', style: GoogleFonts.rye()));
+                  }
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
+
+
 
 class ItemDetailView extends StatefulWidget {
   final Item item;
@@ -244,44 +326,102 @@ class _ItemDetailViewState extends State<ItemDetailView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.item.name)),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            FutureBuilder<Uint8List>(
-              future: _imageFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error loading image: ${snapshot.error}'));
-                } else if (snapshot.hasData) {
-                  return Center(
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
-                          image: MemoryImage(snapshot.data!),
-                          fit: BoxFit.contain,
-                        ),
+      appBar: AppBar(
+        title: Text(widget.item.name,
+        style: GoogleFonts.rye(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),),
+        backgroundColor: const Color.fromARGB(255, 214, 106, 67),
+      ),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/sbr_background2.jpg"),
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FutureBuilder<Uint8List>(
+                            future: _imageFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(child: Text('Error loading image: ${snapshot.error}'));
+                              } else if (snapshot.hasData) {
+                                return Center(
+                                  child: Container(
+                                    width: 200,
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 5,
+                                          offset: Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.memory(
+                                        snapshot.data!,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return Center(child: Text('No image available'));
+                              }
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            widget.item.name,
+                            style: GoogleFonts.rye(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            widget.item.description,
+                            style: GoogleFonts.rye(
+                              fontSize: 18,
+                              fontWeight: FontWeight.normal,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                } else {
-                  return Center(child: Text('No image available'));
-                }
-              },
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 16),
-            Text(widget.item.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 16),
-            Text(widget.item.description, style: TextStyle(fontSize: 18)),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
