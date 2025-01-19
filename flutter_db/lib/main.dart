@@ -1,8 +1,8 @@
-import 'dart:convert';
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import "package:http/http.dart" as http;
-import 'dart:async';
+import 'package:google_fonts/google_fonts.dart'; 
+import 'appdata.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,14 +22,36 @@ class ResponsiveHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.maxWidth < 600) {
-            return CategoryListView();
-          } else {
-            return CategoryListView();
-          }
-        },
+      appBar: AppBar(
+        title: Text(
+          "JOJO'S Steel Ball Run",
+          style: GoogleFonts.rye(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 2,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 214, 106, 67),
+        elevation: 4,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/sbr_map.jpg"),
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+          ),
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth < 600) {
+              return CategoryListView();
+            } else {
+              return CategoryListView();
+            }
+          },
+        ),
       ),
     );
   }
@@ -46,29 +68,7 @@ class _CategoryListViewState extends State<CategoryListView> {
   @override
   void initState() {
     super.initState();
-    _categoriesFuture = loadCategories();
-  }
-
-  Future<List<Category>> loadCategories() async {
-    final url = Uri.parse('http://localhost:3000/categories');
-    try {
-      final response = await http.post(url);
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(response.body);
-        if (jsonData['categories'] != null) {
-          final List categoriesJson = jsonData['categories'];
-          return categoriesJson.map((category) {
-            return Category.fromJson(category);
-          }).toList();
-        } else {
-          throw Exception('No se encontraron categorías en la respuesta.');
-        }
-      } else {
-        throw Exception('Failed to load categories');
-      }
-    } catch (error) {
-      throw Exception('Error fetching categories: $error');
-    }
+    _categoriesFuture = ApiData.loadCategories();
   }
 
   @override
@@ -86,16 +86,38 @@ class _CategoryListViewState extends State<CategoryListView> {
             itemCount: categories.length,
             itemBuilder: (context, index) {
               final category = categories[index];
-              return ListTile(
-                title: Text(category.name),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ItemListView(categoryId: category.id.toString()),
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,  // Fondo blanco para cada categoría
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
                     ),
-                  );
-                },
+                  ],
+                ),
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(16),
+                  title: Text(
+                    category.name,
+                    style: GoogleFonts.rye(
+                      fontSize: 24, 
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ItemListView(categoryId: category.id.toString()),
+                      ),
+                    );
+                  },
+                ),
               );
             },
           );
@@ -106,6 +128,7 @@ class _CategoryListViewState extends State<CategoryListView> {
     );
   }
 }
+
 
 class ItemListView extends StatefulWidget {
   final String categoryId;
@@ -124,7 +147,7 @@ class _ItemListViewState extends State<ItemListView> {
   @override
   void initState() {
     super.initState();
-    _itemsFuture = loadItems(widget.categoryId, ''); // Cargar todos los items inicialmente
+    _itemsFuture = ApiData.loadItems(widget.categoryId, '');
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -134,35 +157,13 @@ class _ItemListViewState extends State<ItemListView> {
     super.dispose();
   }
 
-  // Función que se llama cada vez que cambia el texto del campo de búsqueda
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       setState(() {
-        _itemsFuture = loadItems(widget.categoryId, _searchController.text); // Filtrar los items según el texto
+        _itemsFuture = ApiData.loadItems(widget.categoryId, _searchController.text);
       });
     });
-  }
-
-  // Función para cargar los items de una categoría y buscar según el texto ingresado
-  Future<List<Item>> loadItems(String categoryId, String searchText) async {
-    final url = Uri.parse('http://localhost:3000/items');
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'categoryId': categoryId, 'search': searchText}), // Enviamos el texto de búsqueda
-      );
-
-      if (response.statusCode == 200) {
-        final List itemsJson = json.decode(response.body)['items'];
-        return itemsJson.map((item) => Item.fromJson(item)).toList();
-      } else {
-        throw Exception('Failed to load items');
-      }
-    } catch (error) {
-      throw Exception('Error fetching items: $error');
-    }
   }
 
   @override
@@ -237,18 +238,7 @@ class _ItemDetailViewState extends State<ItemDetailView> {
   @override
   void initState() {
     super.initState();
-    _imageFuture = fetchImage(widget.item.image);
-  }
-
-  Future<Uint8List> fetchImage(String imageUrl) async {
-    final imageUri = Uri.parse('http://localhost:3000/$imageUrl');
-    final response = await http.get(imageUri);
-
-    if (response.statusCode == 200) {
-      return response.bodyBytes;
-    } else {
-      throw Exception('Failed to load image');
-    }
+    _imageFuture = ApiData.fetchImage(widget.item.image);
   }
 
   @override
@@ -260,7 +250,7 @@ class _ItemDetailViewState extends State<ItemDetailView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FutureBuilder<Uint8List>( 
+            FutureBuilder<Uint8List>(
               future: _imageFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -293,36 +283,6 @@ class _ItemDetailViewState extends State<ItemDetailView> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class Category {
-  final String id;
-  final String name;
-
-  Category({required this.id, required this.name});
-
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
-      id: json['id'].toString(),
-      name: json['name'],
-    );
-  }
-}
-
-class Item {
-  final String name;
-  final String description;
-  final String image;
-
-  Item({required this.name, required this.description, required this.image});
-
-  factory Item.fromJson(Map<String, dynamic> json) {
-    return Item(
-      name: json['name'],
-      description: json['description'],
-      image: json['image'],
     );
   }
 }

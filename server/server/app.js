@@ -17,7 +17,7 @@ app.use(express.static('public'));
 // Ruta POST: Demanar categories
 app.post('/categories', async (req, res) => {
     try {
-      const data = JSON.parse(fs.readFileSync('./data/data.json', 'utf-8'));
+      const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'data.json'), 'utf-8'));
       const categories = {
         categories: data.categories.map((cat, index) => ({
           id: index.toString(),
@@ -39,7 +39,7 @@ app.post('/items', async (req, res) => {
     try {
       const { categoryId, search } = req.body;
   
-      const data = JSON.parse(fs.readFileSync('./data/data.json', 'utf-8'));
+      const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'data.json'), 'utf-8'));
   
       const category = data.categories.find(cat => cat.id == String(categoryId));
   
@@ -66,7 +66,7 @@ app.post('/items', async (req, res) => {
 app.post('/item-info', async (req, res) => {
     try {
         const { itemName } = req.body;
-        const data = JSON.parse(fs.readFileSync('./data/data.json', 'utf-8'));
+        const data = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'data.json'), 'utf-8'));
         const category = data.categories.find(cat =>
             cat.items.some(item => item.name === itemName)
         );
